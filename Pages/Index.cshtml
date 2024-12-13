@@ -1,0 +1,212 @@
+﻿@page
+@model TaskAdmin.Pages.Todo.TodoPageModel
+@{
+    ViewData["Title"] = "3D Task Manager";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h2 class="mb-0">@ViewData["Title"]</h2>
+                    <button type="button" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#historyModal">
+                        <i class="bi bi-clock-history"></i> History
+                    </button>
+                </div>
+                <div class="card-body">
+                    <form method="post" class="mb-4">
+                        <div class="row g-3">
+                            <div class="col-md-5">
+                                <input asp-for="Task.TaskName" class="form-control form-control-lg" placeholder="What needs to be done?" required />
+                            </div>
+                            <div class="col-md-3">
+                                <input asp-for="Task.Date" type="date" class="form-control form-control-lg" value="@Model.CurrentDate.ToString("yyyy-MM-dd")" />
+                            </div>
+                            <div class="col-md-2">
+                                <select asp-for="Task.ListType" class="form-select form-select-lg">
+                                    @foreach (var listType in Model.ListTypes)
+                                    {
+                                        <option value="@listType" selected="@(listType == Model.CurrentListType)">@listType</option>
+                                    }
+                                    <option value="New">+ New List</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <i class="bi bi-plus-lg"></i> Add
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3>@Model.CurrentListType - @Model.CurrentDate.ToString("MMMM dd, yyyy")</h3>
+                        <div>
+                            <a asp-page="./Index" asp-route-date="@Model.CurrentDate.AddDays(-1).ToString("yyyy-MM-dd")" asp-route-listType="@Model.CurrentListType" class="btn btn-outline-secondary">
+                                <i class="bi bi-chevron-left"></i> Previous Day
+                            </a>
+                            <a asp-page="./Index" asp-route-date="@Model.CurrentDate.AddDays(1).ToString("yyyy-MM-dd")" asp-route-listType="@Model.CurrentListType" class="btn btn-outline-secondary">
+                                Next Day <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    @if (Model.TodoTasks != null && Model.TodoTasks.Any())
+                    {
+                        <div class="list-group">
+                            @foreach (var task in Model.TodoTasks)
+                            {
+                                <div class="list-group-item d-flex justify-content-between align-items-center @(task.IsCompleted ? "bg-light" : "")">
+                                    <div class="d-flex align-items-center">
+                                        <span class="@(task.IsCompleted ? "text-decoration-line-through text-muted" : "")">
+                                            @task.TaskName
+                                        </span>
+                                    </div>
+                                    <div class="btn-group">
+                                        <form method="post" asp-page-handler="ToggleStatus" asp-route-id="@task.Id" asp-route-date="@Model.CurrentDate.ToString("yyyy-MM-dd")" asp-route-listType="@Model.CurrentListType" class="me-2">
+                                            <button type="submit" 
+                                                class="btn btn-sm @(task.IsCompleted ? "btn-outline-secondary" : "btn-outline-success")"
+                                                title="@(task.IsCompleted ? "Mark as pending" : "Mark as completed")">
+                                                @if (task.IsCompleted)
+                                                {
+                                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-check-lg"></i>
+                                                }
+                                            </button>
+                                        </form>
+                                        <form method="post" asp-page-handler="Delete" asp-route-id="@task.Id" asp-route-date="@Model.CurrentDate.ToString("yyyy-MM-dd")" asp-route-listType="@Model.CurrentListType">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm" 
+                                                onclick="return confirm('Are you sure you want to delete this task?')">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>No tasks found. Add your first task above!
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-lg">
+                <div class="card-header bg-secondary text-white">
+                    <h3 class="mb-0">3D Task Visualization</h3>
+                </div>
+                <div class="card-body">
+                    <div id="task-manager-3d" style="height: 400px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- History Modal -->
+<div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="historyModalLabel">Task History</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    @foreach (var listType in Model.ListTypes)
+                    {
+                        <div class="col-md-4 mb-3">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0">@listType</h6>
+                                </div>
+                                <div class="card-body">
+                                    <a asp-page="./Index" asp-route-listType="@listType" asp-route-date="@DateTime.Today.ToString("yyyy-MM-dd")" class="btn btn-outline-primary btn-sm">View Today's Tasks</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+    // Initialize 3D scene
+    const container = document.getElementById('task-manager-3d');
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    
+    // Set renderer size to match container
+    function updateRendererSize() {
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+        renderer.setSize(width, height);
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+    }
+    
+    // Initial setup
+    updateRendererSize();
+    container.appendChild(renderer.domElement);
+    renderer.setClearColor(0x000000, 0.1); // Set background color with some transparency
+    
+    // Create tasks visualization
+    const tasks = @Json.Serialize(Model.TodoTasks);
+    const taskObjects = [];
+    
+    tasks.forEach((task, index) => {
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        const material = new THREE.MeshBasicMaterial({ 
+            color: task.IsCompleted ? 0x00ff00 : 0xff0000,
+            transparent: true,
+            opacity: 0.8
+        });
+        const cube = new THREE.Mesh(geometry, material);
+        cube.position.x = (index % 3) * 2 - 2;
+        cube.position.y = Math.floor(index / 3) * 2 - 2;
+        cube.position.z = 0;
+        scene.add(cube);
+        taskObjects.push(cube);
+    });
+    
+    camera.position.z = 10;
+    
+    // Animation loop
+    function animate() {
+        requestAnimationFrame(animate);
+        taskObjects.forEach(cube => {
+            cube.rotation.x += 0.01;
+            cube.rotation.y += 0.01;
+        });
+        renderer.render(scene, camera);
+    }
+    animate();
+    
+    // Handle window resize
+    window.addEventListener('resize', () => {
+        updateRendererSize();
+    });
+    
+    // Handle container resize (for when parent elements change size)
+    const resizeObserver = new ResizeObserver(() => {
+        updateRendererSize();
+    });
+    resizeObserver.observe(container);
+</script>
+}
