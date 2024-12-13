@@ -1,0 +1,224 @@
+@page
+@model TaskAdmin.Pages.HistoryModel
+@{
+    ViewData["Title"] = "Task History";
+}
+
+<div class="container">
+    <h2>Task History</h2>
+
+    <div class="row">
+        <div class="col-md-8">
+            <!-- إحصائيات المهام -->
+            <div class="analysis">
+                <h4>Analysis:</h4>
+                <p><strong>Total Tasks:</strong> @Model.TotalTasks</p>
+                <p><strong>Completed Tasks:</strong> @Model.CompletedTasks</p>
+                <p><strong>Incomplete Tasks:</strong> @Model.IncompleteTasks</p>
+            </div>
+
+            <hr />
+
+            <!-- عرض المهام -->
+            <div class="task-list">
+                @if (Model.Tasks.Any())
+                {
+                    <ul>
+                        @foreach (var task in Model.Tasks)
+                        {
+                            <li>
+                                <strong>@task.TaskName</strong> 
+                                - <span>@task.Date.ToString("yyyy-MM-dd")</span>
+                                - <span class="badge @(task.IsCompleted ? "badge-success" : "badge-danger")">
+                                    @(task.IsCompleted ? "Completed" : "Incomplete")
+                                </span>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p>No tasks found.</p>
+                }
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <!-- الرسمة البيانية -->
+            <h4>Task Completion Overview</h4>
+            <canvas id="taskChart" width="300" height="300"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- إضافة الساعة الزمنية في البار العلوي -->
+<div id="time-bar" class="d-flex justify-content-between align-items-center mt-4">
+    <div>
+        <h5>Live Time</h5>
+    </div>
+    <div id="current-time">
+        <!-- الوقت سيتم تحديثه هنا -->
+    </div>
+</div>
+
+<!-- تحميل مكتبة Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // تحديث الساعة كل ثانية
+        function updateTime() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            const timeString = `${hours}:${minutes}:${seconds}`;
+            document.getElementById("current-time").innerText = timeString;
+        }
+
+        // تحديث الساعة كل ثانية
+        setInterval(updateTime, 1000);
+
+        // عدد المهام المكتملة وغير المكتملة من الـ Model
+        var completedTasks = @Model.CompletedTasks;
+        var incompleteTasks = @Model.IncompleteTasks;
+
+        // رسم بياني من نوع Pie Chart لعرض المهام المكتملة وغير المكتملة
+        var ctx = document.getElementById('taskChart').getContext('2d');
+        var taskChart = new Chart(ctx, {
+            type: 'pie', // نوع الرسم البياني
+            data: {
+                labels: ['Completed', 'Incomplete'],
+                datasets: [{
+                    data: [completedTasks, incompleteTasks], // بيانات الرسم البياني
+                    backgroundColor: ['#4caf50', '#f44336'], // ألوان المهام المكتملة وغير المكتملة
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (tooltipItem) {
+                                return tooltipItem.raw + ' tasks';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+<style>
+    /* إعدادات الألوان المناسبة للوضعين */
+    :root {
+        --light-bg: #f1f1f1;
+        --dark-bg: #333;
+        --light-badge-success: #4caf50;
+        --dark-badge-success: #388e3c;
+        --light-badge-danger: #f44336;
+        --dark-badge-danger: #d32f2f;
+        --light-text: #333;
+        --dark-text: #f1f1f1;
+        --time-bar-bg-light: #ffffff;
+        --time-bar-bg-dark: #222;
+    }
+
+    /* الألوان */
+    body {
+        background-color: var(--light-bg);
+        color: var(--light-text);
+        font-family: 'Arial', sans-serif;
+    }
+
+    /* بالنسبة للـ dark mode */
+    body.dark-mode {
+        background-color: var(--dark-bg);
+        color: var(--dark-text);
+    }
+
+    .badge-success {
+        background-color: var(--light-badge-success);
+        border-radius: 12px;
+        padding: 5px 10px;
+        box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .badge-danger {
+        background-color: var(--light-badge-danger);
+        border-radius: 12px;
+        padding: 5px 10px;
+        box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    /* تأثيرات hover للـ badges */
+    .badge-success:hover, .badge-danger:hover {
+        transform: scale(1.1);
+        cursor: pointer;
+    }
+
+    /* البار العلوي */
+    #time-bar {
+        background-color: var(--time-bar-bg-light);
+        padding: 10px;
+        border-radius: 10px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s ease;
+    }
+
+    body.dark-mode #time-bar {
+        background-color: var(--time-bar-bg-dark);
+    }
+
+    #time-bar h5 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: bold;
+        color: #444;
+    }
+
+    #current-time {
+        font-weight: bold;
+        font-size: 18px;
+        color: #555;
+        font-family: 'Courier New', Courier, monospace;
+    }
+
+    /* رسم بياني (pie chart) */
+    #taskChart {
+        border-radius: 10px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* تخصيص الأزرار أو الأيقونات */
+    .btn {
+        border-radius: 20px;
+        padding: 8px 15px;
+        font-size: 14px;
+        text-transform: uppercase;
+        box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* إعدادات للألوان في الوضع الداكن */
+    body.dark-mode .badge-success {
+        background-color: var(--dark-badge-success);
+    }
+
+    body.dark-mode .badge-danger {
+        background-color: var(--dark-badge-danger);
+    }
+
+    body.dark-mode #time-bar h5 {
+        color: #e0e0e0;
+    }
+
+    body.dark-mode #current-time {
+        color: #ffffff;
+    }
+</style>

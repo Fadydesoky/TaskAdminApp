@@ -1,0 +1,227 @@
+@page
+@model TaskAdmin.Pages.Pages_contactus
+@{
+    ViewData["Title"] = "Contact Us";
+}
+
+@* تضمين الخطوط الحديثة و FontAwesome *@
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+<div class="contact-container">
+    <div class="contact-header text-center">
+        <h1>@ViewData["Title"]</h1>
+        <p class="lead">We'd love to hear from you! Reach out to us via the contact form below.</p>
+    </div>
+
+    <div class="contact-content">
+        <section class="contact-form-section mb-5 fade-in-up">
+            <h2 class="section-title">Contact Form</h2>
+            <form id="contact-form" action="#" method="POST">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Your Name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Your Email" required>
+                </div>
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea class="form-control" id="message" name="message" rows="4" placeholder="Your Message" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg">
+
+                    <i class="fas fa-paper-plane"></i> Send Message
+                </button>
+            </form>
+        </section>
+
+        <section class="contact-details-section mb-5 fade-in-up">
+            <h2 class="section-title">Contact Details</h2>
+            <ul>
+                <li><i class="fas fa-map-marker-alt"></i> <strong>Address:</strong> 18 Ahmed Alzomour ST, Nasr City, Cairo, Egypt</li>
+                <li><i class="fas fa-phone-alt"></i> <strong>Phone:</strong> +201030356690</li>
+                <li><i class="fas fa-envelope"></i> <strong>Email:</strong> fadydesoky45@gmail.com</li>
+            </ul>
+        </section>
+
+        <section class="follow-us-section text-center">
+            <h2 class="section-title">Follow Us</h2>
+            <div class="social-icons">
+                <a href="https://www.facebook.com/login/?next=https%3A%2F%2Fwww.facebook.com%2F" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://x.com/?lang=en" class="social-icon"><i class="fab fa-twitter"></i></a>
+                <a href="https://www.instagram.com/" class="social-icon"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.linkedin.com/?original_referer=https%3A%2F%2Fwww.google.com%2F" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+        </section>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById('contact-form');
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            alert("Message sent successfully!");
+        });
+
+        // تحديد الوقت الحالي
+        const hours = new Date().getHours();
+        const body = document.body;
+
+        // إذا كان الوقت بين الساعة 7 صباحًا و 7 مساءً، تفعيل اللايت مود
+        if (hours >= 7 && hours < 19) {
+            body.classList.add("light-mode");
+            body.classList.remove("dark-mode");
+        } else {
+            body.classList.add("dark-mode");
+            body.classList.remove("light-mode");
+        }
+
+        // إضافة تأخير لظهور العناصر مع fade-in
+        const elements = document.querySelectorAll(".fade-in-up");
+        elements.forEach((el, index) => {
+            setTimeout(() => {
+                el.classList.add("visible");
+            }, index * 300);
+        });
+    });
+</script>
+
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* Default Light Mode Styles */
+    .light-mode {
+        background: linear-gradient(135deg, #ff7c7c, #1e88e5); /* Gradients with pink and blue */
+        color: #fff;
+    }
+
+     /* Dark Mode Styles */
+    .dark-mode {
+        background: #2e2e2e;
+        color: #eaeaea;
+        }
+
+    .contact-container {
+       padding: 30px;
+        max-width: 1200px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        animation: slideIn 1s ease-out;
+    }
+
+    .contact-header {
+        margin-bottom: 40px;
+    }
+
+    .contact-header h1 {
+        font-size: 36px;
+        font-weight: 600;
+    }
+
+    .contact-header .lead {
+        font-size: 18px;
+    }
+
+    .section-title {
+     font-size: 28px;
+        font-weight: 600;
+        color: #ffffff;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #fff;
+        padding-bottom: 10px;
+        animation: fadeIn 1s ease-out;
+    }
+
+    .contact-form .form-group label {
+        font-weight: 500;
+    }
+
+    .contact-form .form-control {
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 15px;
+        border: 1px solid rgba(0, 0, 0, 0.3);
+        font-size: 16px;
+        transition: border-color 0.3s;
+    }
+
+    .contact-form .form-control:focus {
+        border-color: #ff4081;
+        outline: none;
+    }
+
+    .btn-primary {
+       background-color: #ff4081;
+        color: #fff;
+        border-radius: 50px;
+        padding: 15px 30px;
+        text-transform: uppercase;
+        font-weight: bold;
+        letter-spacing: 1px;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+         margin-top: 30px; 
+         display: block;
+         width: 100%;
+    }
+
+    .btn-primary:hover {
+       background-color: #d81b60;
+        transform: scale(1.1);
+    }
+
+    .contact-details ul {
+        list-style-type: none;
+        padding-left: 0;
+    }
+
+    .contact-details ul li {
+        font-size: 18px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+    }
+
+    .contact-details ul li i {
+        margin-right: 10px;
+        color: #ff4081;
+    }
+
+    .social-icons {
+        margin-top: 15px;
+    }
+
+    .social-icons a {
+        font-size: 24px;
+        margin: 0 10px;
+        transition: color 0.3s ease;
+    }
+
+    .social-icons a:hover {
+        color: #ff4081;
+    }
+
+    /* Apply Fade-in Animation to sections */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 1s, transform 1s;
+    }
+
+    .fade-in-up.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+</style>

@@ -76,6 +76,20 @@ namespace TaskAdmin.Services
                 .OrderBy(t => t)
                 .ToListAsync();
         }
+
+        public Task GetTaskByIdAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task GetCompletedTasksAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task GetIncompleteTasksAsync()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
-

@@ -13,6 +13,8 @@ namespace TaskAdmin.Services
         Task<bool> DeleteTaskAsync(int id);
         Task<bool> ToggleTaskStatusAsync(int id);
         Task<List<string>> GetUniqueListTypesAsync();
+        Task GetTaskByIdAsync(int id);
+        Task GetCompletedTasksAsync();
+        Task GetIncompleteTasksAsync();
     }
 }
-

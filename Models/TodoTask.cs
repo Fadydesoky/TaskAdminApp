@@ -17,6 +17,19 @@ namespace TaskAdmin.Models
         
         [Required]
         public string ListType { get; set; } = "Default";
+
+        private Task? completedTask;
+
+        public Task GetCompletedTask()
+        {
+#pragma warning disable CS8603 // Possible null reference return.
+            return completedTask;
+#pragma warning restore CS8603 // Possible null reference return.
+        }
+
+        internal void SetCompletedTask(Task value)
+        {
+            completedTask = value;
+        }
     }
 }
-

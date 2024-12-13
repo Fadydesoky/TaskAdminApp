@@ -45,17 +45,21 @@ namespace TaskAdmin.Pages.Todo
             return RedirectToPage(new { listType = Task.ListType, date = Task.Date.ToString("yyyy-MM-dd") });
         }
 
-       public async Task<IActionResult> OnPostDeleteAsync(int id)
-       {
-        await _todoService.DeleteTaskAsync(id);
-        return RedirectToPage(new { listType = CurrentListType, date = DateTime.Today.ToString("yyyy-MM-dd") });
+        // Delete a single task
+        public async Task<IActionResult> OnPostDeleteAsync(int id)
+        {
+            await _todoService.DeleteTaskAsync(id);
+            return RedirectToPage(new { listType = CurrentListType, date = DateTime.Today.ToString("yyyy-MM-dd") });
         }
+
+        // Toggle task status (Completed / Pending)
         public async Task<IActionResult> OnPostToggleStatusAsync(int id)
         {
             await _todoService.ToggleTaskStatusAsync(id);
             return RedirectToPage(new { listType = CurrentListType, date = DateTime.Today.ToString("yyyy-MM-dd") });
-            }
+        }
 
+        // Delete all tasks for the current list and date
         private DateTime NormalizeDate(DateTime date)
         {
             return date.Date.Clamp(MinDate, MaxDate);

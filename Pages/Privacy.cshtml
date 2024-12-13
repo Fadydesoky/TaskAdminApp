@@ -5,19 +5,24 @@
 }
 
 <div class="privacy-container">
-    <div class="privacy-header">
+    <div class="privacy-header text-center">
         <h1>@ViewData["Title"]</h1>
         <p class="lead">Last updated: @DateTime.Now.ToString("MMMM dd, yyyy")</p>
     </div>
 
+    <!-- إضافة صورة GIF للأمان -->
+    <div class="security-gif-container text-center mb-5">
+        <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExZHcwamlwcWNubmV4OWNuc2lsZzE5YzN3OHR6NWplZGNuNjE5YXpvdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Xi2Xu0MejhsUo/200.webp" alt="Security Protection" class="security-gif" />
+    </div>
+
     <div class="privacy-content">
-        <section class="mb-4">
-            <h2>Introduction</h2>
+        <section class="mb-5 fade-in-up">
+            <h2 class="section-title">Introduction</h2>
             <p>At Task Manager 3D, we take your privacy seriously. This privacy policy describes how we collect, use, and protect your personal information when you use our task management application.</p>
         </section>
 
-        <section class="mb-4">
-            <h2>Information We Collect</h2>
+        <section class="mb-5 fade-in-up">
+            <h2 class="section-title">Information We Collect</h2>
             <ul>
                 <li>Task data: The tasks you create, modify, and manage</li>
                 <li>User preferences: Your preferred task categories and organization methods</li>
@@ -25,8 +30,8 @@
             </ul>
         </section>
 
-        <section class="mb-4">
-            <h2>How We Use Your Information</h2>
+        <section class="mb-5 fade-in-up">
+            <h2 class="section-title">How We Use Your Information</h2>
             <p>We use the collected information to:</p>
             <ul>
                 <li>Provide and maintain our task management service</li>
@@ -36,13 +41,13 @@
             </ul>
         </section>
 
-        <section class="mb-4">
-            <h2>Data Storage and Security</h2>
+        <section class="mb-5 fade-in-up">
+            <h2 class="section-title">Data Storage and Security</h2>
             <p>Your task data is stored securely in our database. We implement appropriate security measures to protect against unauthorized access, alteration, disclosure, or destruction of your personal information.</p>
         </section>
 
-        <section class="mb-4">
-            <h2>Your Rights</h2>
+        <section class="mb-5 fade-in-up">
+            <h2 class="section-title">Your Rights</h2>
             <p>You have the right to:</p>
             <ul>
                 <li>Access your personal information</li>
@@ -52,8 +57,8 @@
             </ul>
         </section>
 
-        <section class="mb-4">
-            <h2>Contact Us</h2>
+        <section class="mb-5 fade-in-up">
+            <h2 class="section-title">Contact Us</h2>
             <p>If you have any questions about this Privacy Policy, please contact us at:</p>
             <ul>
                 <li>Email: fadydesoky45@gmail.com</li>
@@ -63,3 +68,136 @@
         </section>
     </div>
 </div>
+
+<script>
+    // Function to determine if it's day or night
+    function getTimeOfDay() {
+        const hour = new Date().getHours();
+        return (hour >= 18 || hour < 6) ? 'dark' : 'light'; // From 6 PM to 6 AM, it's dark
+    }
+
+    // Apply the dark or light theme based on the time of day
+    document.addEventListener("DOMContentLoaded", function() {
+        const theme = getTimeOfDay();
+        if (theme === 'dark') {
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.add('light-mode');
+        }
+
+        // Optional: Apply fade-in effect
+        const elements = document.querySelectorAll(".fade-in-up");
+        elements.forEach((el, index) => {
+            setTimeout(() => {
+                el.classList.add("visible");
+            }, index * 300);
+        });
+    });
+</script>
+
+<style>
+    /* Global Styles */
+    body {
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* Default Light Mode Styles */
+    .light-mode {
+        background: #f0f4f8;  /* لون خلفية فاتح هادي */
+        color: #444;  /* لون نص داكن ليس مزعجًا */
+    }
+
+    .privacy-container {
+        padding: 60px 30px;
+        max-width: 1200px;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        animation: slideIn 1s ease-out;
+    }
+
+    .privacy-header {
+        margin-bottom: 40px;
+    }
+
+    .privacy-header h1 {
+        font-size: 36px;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+        color: #2d3e50; /* لون هادي وجميل */
+    }
+
+    .privacy-header .lead {
+        font-size: 18px;
+        color: #888;  /* لون نص هادي */
+    }
+
+    .section-title {
+        font-size: 26px;
+        font-weight: 700;
+        color: #3e4c59;  /* لون هادي للنص */
+        margin-bottom: 20px;
+        border-bottom: 3px solid #ff6f61;  /* لون دافئ للفصل */
+        padding-bottom: 10px;
+        text-transform: uppercase;
+        animation: fadeIn 1s ease-out;
+    }
+
+    /* Dark Mode Styles */
+    .dark-mode {
+        background: #333;
+        color: #f4f4f4;
+    }
+
+    .dark-mode .privacy-container {
+        background: #444;
+        box-shadow: 0 10px 20px rgba(255, 255, 255, 0.1);
+    }
+
+    .dark-mode .privacy-header h1,
+    .dark-mode .section-title {
+        color: #ffab00; /* لون دافئ وجميل للعنوان */
+    }
+
+    .dark-mode .privacy-header .lead {
+        color: #bbb;
+    }
+
+    /* Image GIF Styling with Zoom on Hover */
+    .security-gif-container {
+        max-width: 350px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .security-gif {
+        width: 100%;
+        max-height: 200px;
+        object-fit: contain;
+        border-radius: 8px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .security-gif:hover {
+        transform: scale(1.1);
+    }
+
+    /* Fade-in Animation for Sections */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 1s, transform 1s;
+    }
+
+    .fade-in-up.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+</style>

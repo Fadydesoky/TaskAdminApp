@@ -7,7 +7,7 @@
 <div class="container-fluid mt-4">
     <div class="row">
         <div class="col-md-8">
-            <div class="card shadow-lg">
+            <div class="card shadow-lg rounded-3">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                     <h2 class="mb-0">@ViewData["Title"]</h2>
                     <button type="button" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#historyModal">
@@ -15,6 +15,7 @@
                     </button>
                 </div>
                 <div class="card-body">
+                    <!-- Form to Add New Task -->
                     <form method="post" class="mb-4">
                         <div class="row g-3">
                             <div class="col-md-5">
@@ -40,6 +41,7 @@
                         </div>
                     </form>
 
+                    <!-- Date Navigation and Delete All Button -->
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h3>@Model.CurrentListType - @Model.CurrentDate.ToString("MMMM dd, yyyy")</h3>
                         <div>
@@ -52,18 +54,20 @@
                         </div>
                     </div>
 
+                    <!-- Task List -->
                     @if (Model.TodoTasks != null && Model.TodoTasks.Any())
                     {
                         <div class="list-group">
                             @foreach (var task in Model.TodoTasks)
                             {
-                                <div class="list-group-item d-flex justify-content-between align-items-center @(task.IsCompleted ? "bg-light" : "")">
+                                <div class="list-group-item d-flex justify-content-between align-items-center @(task.IsCompleted ? "bg-light" : "bg-dark text-white")">
                                     <div class="d-flex align-items-center">
                                         <span class="@(task.IsCompleted ? "text-decoration-line-through text-muted" : "")">
                                             @task.TaskName
                                         </span>
                                     </div>
                                     <div class="btn-group">
+                                        <!-- Toggle Task Status -->
                                         <form method="post" asp-page-handler="ToggleStatus" asp-route-id="@task.Id" asp-route-date="@Model.CurrentDate.ToString("yyyy-MM-dd")" asp-route-listType="@Model.CurrentListType" class="me-2">
                                             <button type="submit" 
                                                 class="btn btn-sm @(task.IsCompleted ? "btn-outline-secondary" : "btn-outline-success")"
@@ -78,6 +82,7 @@
                                                 }
                                             </button>
                                         </form>
+                                        <!-- Delete Task -->
                                         <form method="post" asp-page-handler="Delete" asp-route-id="@task.Id" asp-route-date="@Model.CurrentDate.ToString("yyyy-MM-dd")" asp-route-listType="@Model.CurrentListType">
                                             <button type="submit" class="btn btn-outline-danger btn-sm" 
                                                 onclick="return confirm('Are you sure you want to delete this task?')">
@@ -98,8 +103,10 @@
                 </div>
             </div>
         </div>
+
+        <!-- 3D Visualization Column -->
         <div class="col-md-4">
-            <div class="card shadow-lg">
+            <div class="card shadow-lg rounded-3">
                 <div class="card-header bg-secondary text-white">
                     <h3 class="mb-0">3D Task Visualization</h3>
                 </div>
@@ -124,8 +131,8 @@
                     @foreach (var listType in Model.ListTypes)
                     {
                         <div class="col-md-4 mb-3">
-                            <div class="card">
-                                <div class="card-header">
+                            <div class="card shadow-lg rounded-3">
+                                <div class="card-header bg-light text-dark">
                                     <h6 class="mb-0">@listType</h6>
                                 </div>
                                 <div class="card-body">
@@ -145,68 +152,108 @@
 
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script>
-    // Initialize 3D scene
-    const container = document.getElementById('task-manager-3d');
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    
-    // Set renderer size to match container
-    function updateRendererSize() {
-        const width = container.clientWidth;
-        const height = container.clientHeight;
-        renderer.setSize(width, height);
-        camera.aspect = width / height;
-        camera.updateProjectionMatrix();
-    }
-    
-    // Initial setup
-    updateRendererSize();
-    container.appendChild(renderer.domElement);
-    renderer.setClearColor(0x000000, 0.1); // Set background color with some transparency
-    
-    // Create tasks visualization
-    const tasks = @Json.Serialize(Model.TodoTasks);
-    const taskObjects = [];
-    
-    tasks.forEach((task, index) => {
-        const geometry = new THREE.BoxGeometry(1, 1, 1);
-        const material = new THREE.MeshBasicMaterial({ 
-            color: task.IsCompleted ? 0x00ff00 : 0xff0000,
-            transparent: true,
-            opacity: 0.8
-        });
-        const cube = new THREE.Mesh(geometry, material);
-        cube.position.x = (index % 3) * 2 - 2;
-        cube.position.y = Math.floor(index / 3) * 2 - 2;
-        cube.position.z = 0;
-        scene.add(cube);
-        taskObjects.push(cube);
-    });
-    
-    camera.position.z = 10;
-    
-    // Animation loop
-    function animate() {
-        requestAnimationFrame(animate);
-        taskObjects.forEach(cube => {
-            cube.rotation.x += 0.01;
-            cube.rotation.y += 0.01;
-        });
-        renderer.render(scene, camera);
-    }
-    animate();
-    
-    // Handle window resize
-    window.addEventListener('resize', () => {
+    <script>
+        // 3D Scene Setup
+        const container = document.getElementById('task-manager-3d');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        
+        // Set renderer size to match container
+        function updateRendererSize() {
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            renderer.setSize(width, height);
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+        }
+        
+        // Initial setup
         updateRendererSize();
-    });
-    
-    // Handle container resize (for when parent elements change size)
-    const resizeObserver = new ResizeObserver(() => {
-        updateRendererSize();
-    });
-    resizeObserver.observe(container);
-</script>
+        container.appendChild(renderer.domElement);
+        renderer.setClearColor(0x333333, 1); // Dark gray background
+        
+        // Create tasks visualization
+        const tasks = @Json.Serialize(Model.TodoTasks);
+        const taskObjects = [];
+        
+        tasks.forEach((task, index) => {
+            const geometry = new THREE.BoxGeometry(1, 1, 1);
+            const material = new THREE.MeshBasicMaterial({ 
+                color: task.IsCompleted ? 0x00ff00 : 0xff0000,
+                transparent: true,
+                opacity: 0.8
+            });
+            const cube = new THREE.Mesh(geometry, material);
+            cube.position.x = (index % 3) * 2 - 2;
+            cube.position.y = Math.floor(index / 3) * 2 - 2;
+            scene.add(cube);
+            taskObjects.push(cube);
+        });
+        
+        camera.position.z = 10;
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            taskObjects.forEach(cube => {
+                cube.rotation.x += 0.01;
+                cube.rotation.y += 0.01;
+            });
+            renderer.render(scene, camera);
+        }
+        animate();
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            updateRendererSize();
+        });
+    </script>
 }
+
+<style>
+    /* Dark Mode Styles */
+    body.dark-mode {
+        background-color: #121212;
+        color: white;
+    }
+    .dark-mode .card {
+        background-color: #1e1e1e;
+    }
+    .dark-mode .btn-outline-light {
+        border-color: #ccc;
+        color: #ccc;
+    }
+    .dark-mode .btn-outline-light:hover {
+        background-color: #333;
+        color: white;
+    }
+    .dark-mode .bg-primary {
+        background-color: #007bff !important;
+    }
+
+    /* Light Mode Styles */
+    body.light-mode {
+        background-color: #f8f9fa;
+        color: #212529;
+    }
+    .light-mode .card {
+        background-color: #ffffff;
+    }
+    .light-mode .btn-outline-light {
+        border-color: #0056b3;
+        color: #0056b3;
+    }
+    .light-mode .btn-outline-light:hover {
+        background-color: #e6f7ff;
+        color: #0056b3;
+    }
+    .light-mode .bg-primary {
+        background-color: #007bff !important;
+    }
+
+    /* 3D Visualization Background */
+    #task-manager-3d {
+        background-color: #333;
+    }
+</style>
